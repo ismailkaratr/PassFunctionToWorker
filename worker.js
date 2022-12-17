@@ -1,6 +1,24 @@
-self.onmessage = blob => {
-    var url = URL.createObjectURL(blob.data);
-    self.importScripts(url);
-    console.log("Topla:",topla(1,2));
-    console.log("Çıkar:",cikar(4,2))
+self.onmessage = ({data}) => {
+
+
+    if (data.constructor === Blob) {
+        data.text().then((text) =>
+            console.log("\nWORKER: tanimlama:", text)
+        )
+
+
+        var url = URL.createObjectURL(data);
+        self.importScripts(url);
+    }
+
+    else {
+        console.error("WORKER: istek geldi:", data)
+
+
+        postMessage({
+            func: data.func,
+            data: self[data.func].apply( self, data.args )
+        })
+    }
+
 };
